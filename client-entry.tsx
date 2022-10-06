@@ -1,13 +1,29 @@
+import deepmerge from 'ts-deepmerge';
+
 import conference from './src/conference.md';
 import pressrelease from './src/pressrelease.md'
 
 declare const growiFacade: any;
 
 const activate = (): void => {
-  growiFacade.customTemplates['growi-plugin-markdown-templates'] = {
-    conference: conference,
-    pressrelease: pressrelease,
-  }
+  const tplConference = {
+    id: 'growi-plugin-markdown-templates__conference',
+    name: '議事録(シンプル)',
+    markdown: conference,
+  };
+  const tplPressrelease = {
+    id: 'growi-plugin-markdown-templates__pressrelease',
+    name: 'プレスリリース',
+    markdown: pressrelease,
+  };
+
+  growiFacade.customTemplates = deepmerge(
+    growiFacade.customTemplates ?? {},
+    {
+      [tplConference.id]: tplConference,
+      [tplPressrelease.id]: tplPressrelease,
+    },
+  );
 };
 
 const deactivate = (): void => {
