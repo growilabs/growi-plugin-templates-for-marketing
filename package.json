@@ -27,12 +27,8 @@
     "types": [
       "template"
     ],
-    "templates": [
-      {
-        "id": "pressrelease",
-        "name": "プレスリリース",
-        "markdown": "pressrelease.md"
-      }
+    "locales": [
+      "en_US", "ja_JP", "zh_CN"
     ]
   }
 }
