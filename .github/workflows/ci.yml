@@ -1,0 +1,51 @@
+name: CI to check all the templates exist
+
+on:
+  push:
+    paths:
+      - .github/workflows/ci.yml
+      - dist/**
+      - test/**
+      - packages.json
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
+
+      - name: Cache/Restore node_modules
+        id: cache-dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: node_modules-${{ runner.OS }}-node${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            node_modules-${{ runner.OS }}-node${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}-
+            node_modules-${{ runner.OS }}-node${{ matrix.node-version }}-
+
+      - name: Install dependencies
+        run: |
+          yarn --frozen-lockfile
+
+      - name: Test
+        run: |
+          yarn test
