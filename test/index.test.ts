@@ -26,31 +26,100 @@ describe('package.json', () => {
       expect(types.includes('template')).toBeTruthy();
     });
 
-    it('contains a templates directive', () => {
+    it('contains a locales directive', () => {
       // when
-      const { templates } = pkg.growiPlugin;
+      const { locales } = pkg.growiPlugin;
 
       // then
-      expect(templates.length).toBeGreaterThan(0);
+      expect(locales.length).toBeGreaterThan(0);
     });
 
   });
 
-  describe('The templates directive has', () => {
+});
 
-    const statAsync = promisify(fs.stat);
 
-    const { templates } = pkg.growiPlugin;
+const statAsync = promisify(fs.stat);
 
-    it.concurrent.each(templates)('{ id: $id } and should exist', async({ markdown }) => {
-      // when
-      const resolvedPath = path.resolve(__dirname, `../dist/${markdown}`);
-      const stat = await statAsync(resolvedPath);
+type TplDirStats = {
+  isTemplateExists: boolean,
+  isMetaDataFileExists: boolean,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: any,
+}
 
-      // then
-      expect(stat).not.toBeNull();
-      expect(stat.isFile).toBeTruthy();
+async function getStats(tplDir: string): Promise<TplDirStats> {
+  const markdownPath = path.resolve(tplDir, 'template.md');
+  const statForMarkdown = await statAsync(markdownPath);
+  const isTemplateExists = statForMarkdown.isFile();
+
+  const metaDataPath = path.resolve(tplDir, 'meta.json');
+  const statForMetaDataFile = await statAsync(metaDataPath);
+  const isMetaDataFileExists = statForMetaDataFile.isFile();
+
+  const result: TplDirStats = {
+    isTemplateExists,
+    isMetaDataFileExists,
+  };
+
+  if (isMetaDataFileExists) {
+    result.meta = await import(metaDataPath);
+  }
+
+  return result;
+}
+
+describe('The dist dir', () => {
+
+  const distDirPath = path.resolve(__dirname, '../dist');
+  const distDirFiles = fs.readdirSync(distDirPath);
+
+  describe.concurrent.each(distDirFiles)("has the template dir '%s'", (tplId) => {
+    const tplRootDirPath = path.resolve(distDirPath, tplId);
+    const localeDirs = fs.readdirSync(tplRootDirPath);
+
+    it.concurrent.each(localeDirs)("and it has the locale dir '%s'", async(locale) => {
+      const tplDir = path.resolve(tplRootDirPath, locale);
+
+      const stats = await getStats(tplDir);
+
+      expect(stats.isTemplateExists).toBeTruthy();
+      expect(stats.isMetaDataFileExists).toBeTruthy();
+      expect(stats.meta?.title).not.toBeNull();
+    });
+
+    const supportingLocales = pkg.growiPlugin.locales;
+
+    it(`and it has locale directories corresponding to at least one of the supporting locale list '${supportingLocales}'`, async() => {
+      const results = [];
+
+      for await (const locale of supportingLocales) {
+        const tplDir = path.resolve(tplRootDirPath, locale);
+
+        try {
+          const {
+            isTemplateExists, isMetaDataFileExists, meta,
+          } = await getStats(tplDir);
+
+          if (!isTemplateExists) throw new Error("'template.md does not exist.");
+          if (!isMetaDataFileExists) throw new Error("'meta.md does not exist.");
+          if (meta?.title == null) throw new Error("'meta.md does not contain the title.");
+
+          results.push({ locale, isValid: true });
+        }
+        catch (err) {
+          results.push({
+            locale,
+            isValid: false,
+            reason: err.message,
+          });
+        }
+      }
+
+      // eslint-disable-next-line no-console
+      console.debug({ results });
+
+      expect(results.some(result => result.isValid)).toBeTruthy();
     });
   });
-
 });
