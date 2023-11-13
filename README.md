@@ -9,7 +9,7 @@
     - [https://demo.growi.org/6551a6641e857b75b48098d7#日本語版](https://demo.growi.org/6551a6641e857b75b48098d7#日本語版)
   - **カスタマージャーニーマップ**📒
     - [https://demo.growi.org/6551a7411e857b75b480a0fa#日本語版](https://demo.growi.org/6551a7411e857b75b480a0fa#日本語版) 
-  - **数値分析シート📈
+  - **数値分析シート**📈
     - [https://demo.growi.org/6551a7e61e857b75b480a524#日本語版](https://demo.growi.org/6551a7e61e857b75b480a524#日本語版)
   - **市場分析シート**💹
     - [https://demo.growi.org/6551aa171e857b75b480acbd#日本語版](https://demo.growi.org/6551aa171e857b75b480acbd#日本語版)
