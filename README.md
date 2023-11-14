@@ -1,7 +1,5 @@
 ## GROWI Plugin Templates for Marketing
 
-- リポジトリ URL
-    - https://github.com/weseek/growi-plugin-templates-for-marketing
 - パッケージに含まれているテンプレート （URL からサンプルを確認できます）
   - **SEO対策用ページ構成書**📝
     - [https://demo.growi.org/6551a4c41e857b75b4808f87#日本語版](https://demo.growi.org/6551a4c41e857b75b4808f87#日本語版)
@@ -19,8 +17,6 @@
 - 対応言語
     - 日本語、英語、中国語
 ----
-- Repository URL
-    - https://github.com/weseek/growi-plugin-templates-for-marketing
 - The following templates are included in the package (Check samples from the following URLs)
     - **Article SEO Strategy Plan**📝
       - [https://demo.growi.org/6551a4c41e857b75b4808f87#english-version](https://demo.growi.org/6551a4c41e857b75b4808f87#english-version)
